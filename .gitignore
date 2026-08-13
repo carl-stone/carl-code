@@ -9,3 +9,14 @@ node_modules/
 *.pem
 .env
 .env.*
+
+# Frontend build output
+apps/gui/dist/
+
+# Rust / Tauri build output
+apps/gui/src-tauri/target/
+apps/gui/src-tauri/gen/
+
+# Bun
+bun.lockb
+*.tsbuildinfo

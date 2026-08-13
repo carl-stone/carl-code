@@ -1,0 +1,11 @@
+{
+  "name": "carl-code",
+  "version": "0.1.0",
+  "description": "Carl's personal pi coding-agent harness: extensions, skills, prompts, and themes.",
+  "private": true,
+  "keywords": ["pi-package"],
+  "license": "UNLICENSED",
+  "pi": {
+    "extensions": ["./extensions"]
+  }
+}
