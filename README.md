@@ -1,6 +1,6 @@
 # carl-code
 
-Carl's personal agent harness, built on top of pi (the oh-my-pi coding agent).
+Carl's personal agent harness, built on top of pi.
 
 This repo is a **pi package**. It bundles Carl's hand-written extensions, skills,
 prompts, and themes — the "behavior" of his harness. It installs into pi globally
