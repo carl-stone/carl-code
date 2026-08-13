@@ -73,9 +73,10 @@ Single source of truth for todo — keep only here, not in ARCHITECTURE.md.
 
 ### Harness (TUI extensions)
 1. ✅ **Permission/safety gate** — `packages/harness/extensions/permission-gate.ts`.
-   Blocks dangerous bash (rm -rf, sudo, mkfs, dd, chmod 777, force-push, …) and
-   writes to machine-critical paths, prompting via `tool_call`; config in
-   `~/.pi/agent/permission-gate.json`. Verified: load + blocking behaviors.
+   Blocks destructive & irreversible bash (rm -rf, mkfs, dd→/dev, force-push,
+   reset --hard); does NOT block insecure-but-recoverable commands (chmod, sudo).
+   Also guards writes to machine-critical paths. Prompts via `tool_call`; config
+   in `~/.pi/agent/permission-gate.json`. Verified end-to-end.
 2. ✅ **Todo tool** — via `@juicesharp/rpiv-todo` (installed).
 3. ⬜ **Memory** — `retain` / `recall` / `reflect` tools, JSON file in `~/.pi`
 4. ✅ **Subagent runner** — via `pi-subagents` (installed).
@@ -90,30 +91,3 @@ Other installed third-party packages:
 - `pi-subagents` — subagent runner
 - `pi-web-access` — web search/fetch (decision 0002)
 
-### GUI (desktop app) — 🧷 PAUSED
-
-Scaffolded and verified runnable (Tauri window boots, sidecar child created a
-persisted `AgentSession`, no errors). **Put on hold** while we focus on the
-harness itself; revisit later with clearer requirements.
-
-Status: working v1 scaffold. Known rough edges to tackle on return: markdown
-rendering (raw text now), thinking toggle, tool-card diffs, mid-stream
-steer/follow-up, model/abort controls, session tree, GUI mirrors of harness
-commands. The environment was verified headless; manual run is
-`bun run --cwd apps/gui tauri dev`.
-
-- v1 ✅ **chat projection** — streaming messages, tool events, composer, status bar, session create
-- ⬜ markdown rendering of assistant messages (marked)
-- ⬜ thinking-token rendering + toggle
-- ⬜ tool cards: collapsible output + diff view
-- ⬜ steer / follow-up queueing controls
-- ⬜ model / thinking-level selectors, abort button
-- ⬜ session tree, fork, resume
-- ⬜ `/` command palette + GUI mirrors of harness commands
-- ⬜ GUI status widget mirroring `context-guard` footer status
-
-### Non-goals
-- Forking pi or omp
-- Rust-core features (LSP, DAP, embedded bash, AST, deep hashline) —
-  see decision [0003](docs/decisions/0003-defer-core-rust-omp-features.md)
-- Adopting omp wholesale — we add to a lean base instead

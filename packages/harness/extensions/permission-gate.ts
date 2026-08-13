@@ -42,19 +42,18 @@ function loadConfig(): Config {
   }
 }
 
-// Commands that are risky, irreversible, or escalate privileges.
+// Commands that are DESTRUCTIVE AND IRREVERSIBLE — they delete or overwrite
+// data that cannot be recovered, or force-rewrite shared history. We
+// intentionally do NOT block merely-insecure or disruptive-but-recoverable
+// commands (chmod 777, sudo, pkill, reboot): the gate should stop real
+// irreversible damage, not annoy every session.
 const DANGEROUS_BASH = [
-  /\brm\s+(-[a-z]*rf|--recursive)/i,
-  /\bsudo\b/i,
-  /\bmkfs\b/i,
-  /\bdd\s+if=/i,
-  /\b(chmod|chown)\b.*777/i,
-  /\b(shutdown|reboot|halt)\b/i,
-  /\bpkill\b.*-9\b/i,
-  /\bgit\s+push\s+(-f|--force)/i, // force push rewrites history
-  /\bgit\s+reset\s+--hard/i,
-  /:\(\)\{\s*:\|:\s*&\s*\}\s*;/, // fork bomb
-  /\bchmod\s+-R/, // recursive chmod is often a mistake
+  /\brm\s+(-[a-z]*[rf]|--recursive|--force)/i, // recursive/force delete (irreversible)
+  /\bmkfs(?:\.\w+)?\b/i,                     // format a filesystem (wipes data)
+  /\bdd\b[\s\S]*\bof=\/dev\//i,           // dd writing directly to a raw device
+  /\bgit\s+push\s+(-f|--force)/i,             // force push rewrites remote history
+  /\bgit\s+reset\s+--hard\b/i,               // discards uncommitted changes
+  /\bgit\s+clean\s+-f/i,                      // deletes untracked files
 ];
 
 // Machine-critical / private paths we never let a tool write blindly.
