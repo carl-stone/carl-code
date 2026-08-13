@@ -1,0 +1,11 @@
+# Node / package installs
+node_modules/
+
+# pi-generated / local caches (do NOT version these)
+.pi/
+*.local
+
+# Secrets — never commit credentials
+*.pem
+.env
+.env.*
