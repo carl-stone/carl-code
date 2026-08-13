@@ -78,7 +78,7 @@ Single source of truth for todo — keep only here, not in ARCHITECTURE.md.
    Also guards writes to machine-critical paths. Prompts via `tool_call`; config
    in `~/.pi/agent/permission-gate.json`. Verified end-to-end.
 2. ✅ **Todo tool** — via `@juicesharp/rpiv-todo` (installed).
-3. ⬜ **Memory** — `retain` / `recall` / `reflect` tools, JSON file in `~/.pi`
+3. 🧷 **Memory** — `retain` / `recall` / `reflect` tools. **PINNED**: not sure it's wanted; revisit before committing to an integration.
 4. ✅ **Subagent runner** — via `pi-subagents` (installed).
 5. ⬜ **`/review`** — reviewer subagents over uncommitted changes (reuse #4)
 6. ✅ **Marked done** — superseded by `unified-edit` extension (row-anchored fuzzy
