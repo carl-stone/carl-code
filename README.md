@@ -72,13 +72,23 @@ The GUI launches the sidecar automatically (thin Rust relay over stdio JSONL).
 Single source of truth for todo — keep only here, not in ARCHITECTURE.md.
 
 ### Harness (TUI extensions)
-1. ⬜ **Permission/safety gate** (spawn from pi's `permission-gate.ts` example)
-2. ⬜ **Todo tool + `/todos` command** (pi example; state persisted via details)
+1. ✅ **Permission/safety gate** — `packages/harness/extensions/permission-gate.ts`.
+   Blocks dangerous bash (rm -rf, sudo, mkfs, dd, chmod 777, force-push, …) and
+   writes to machine-critical paths, prompting via `tool_call`; config in
+   `~/.pi/agent/permission-gate.json`. Verified: load + blocking behaviors.
+2. ✅ **Todo tool** — via `@juicesharp/rpiv-todo` (installed).
 3. ⬜ **Memory** — `retain` / `recall` / `reflect` tools, JSON file in `~/.pi`
-4. ⬜ **Subagent runner** — port pi's `subagent/` example; a `task`-like tool + `/hub`
+4. ✅ **Subagent runner** — via `pi-subagents` (installed).
 5. ⬜ **`/review`** — reviewer subagents over uncommitted changes (reuse #4)
-6. ⬜ **hash-anchored `edit`** — spike tool-override with omp's hashline (optional)
+6. ✅ **Marked done** — superseded by `unified-edit` extension (row-anchored fuzzy
+   edits via public API; installed in harness). Original omp-hashline spike not needed.
 7. ⬜ Decide on porting omp skills/templates as `.md` (semantic-compression, etc.)
+
+Other installed third-party packages:
+- `@juicesharp/rpiv-ask-user-question` — structured questionnaire (typed options)
+- `@juicesharp/rpiv-btw`
+- `pi-subagents` — subagent runner
+- `pi-web-access` — web search/fetch (decision 0002)
 
 ### GUI (desktop app) — 🧷 PAUSED
 
