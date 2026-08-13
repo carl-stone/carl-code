@@ -20,8 +20,7 @@ Keep these three sources consistent and at the right level:
   (Context → Decision → Consequences; add a Revisit trigger when relevant).
   New decision = next number. When behavior changes, reopen/update the relevant
   decision *first*, then align ARCHITECTURE.md.
-- **README.md** — single home for the **roadmap/todo/built list**. Never put it
-  in ARCHITECTURE.md; don’t duplicate it under docs/.
+- **README.md** — single home for the **roadmap/todo/built list**.
 
 When you change architecture or behavior: update the decision file, then
 ARCHITECTURE.md, then (if it affects work) the README roadmap.

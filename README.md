@@ -1,4 +1,4 @@
-# carl-code
+# carl-code, for Carl when he codes.
 
 Carl's personal agent harness, built on top of pi.
 
