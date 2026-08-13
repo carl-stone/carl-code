@@ -1,17 +1,7 @@
-# Docs
+# Docs index
 
-- [ARCHITECTURE.md](../ARCHITECTURE.md) — the architecture we commit to (stable).
-- [decisions/](decisions/) — numbered decision records (ADR-style), cited from
-  ARCHITECTURE.md.
-- Roadmap: see **README.md** (single source).
-
-## Docs policy
-
-- **ARCHITECTURE.md** is the stable contract: what the architecture *is*, and
-  consequences *of decisions* with citations. It should change rarely. Do not put
-  process, rationale, evaluations, or a roadmap in it.
-- **decisions/XXXXXXXX-title.md** — one file per decision. Number sequentially.
-  Each decision: Context → Decision → Consequences (→ Revisit trigger).
-- **Roadmap/todo lives in README.md only** — never in ARCHITECTURE.md.
-- When you change behavior, first update/reopen the relevant decision file, then
-  update ARCHITECTURE.md to match.
+- [ARCHITECTURE.md](../ARCHITECTURE.md) — the architecture we commit to (stable contract)
+- [decisions/](decisions/) — decision records (ADRs), cited from ARCHITECTURE.md
+  - [0001](decisions/0001-base-stock-pi-no-fork.md) — base on stock pi; no fork
+  - [0002](decisions/0002-web-search-pi-web-access.md) — web/search via `pi-web-access`
+  - [0003](decisions/0003-defer-core-rust-omp-features.md) — defer omp core/Rust features + TTSR
