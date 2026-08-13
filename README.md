@@ -80,23 +80,27 @@ Single source of truth for todo — keep only here, not in ARCHITECTURE.md.
 6. ⬜ **hash-anchored `edit`** — spike tool-override with omp's hashline (optional)
 7. ⬜ Decide on porting omp skills/templates as `.md` (semantic-compression, etc.)
 
-### GUI (desktop app)
-- v1 ✅ **chat projection** — streaming messages, tool events, composer, status bar,
-  session create. (Scaffolded; see note below.)
+### GUI (desktop app) — 🧷 PAUSED
+
+Scaffolded and verified runnable (Tauri window boots, sidecar child created a
+persisted `AgentSession`, no errors). **Put on hold** while we focus on the
+harness itself; revisit later with clearer requirements.
+
+Status: working v1 scaffold. Known rough edges to tackle on return: markdown
+rendering (raw text now), thinking toggle, tool-card diffs, mid-stream
+steer/follow-up, model/abort controls, session tree, GUI mirrors of harness
+commands. The environment was verified headless; manual run is
+`bun run --cwd apps/gui tauri dev`.
+
+- v1 ✅ **chat projection** — streaming messages, tool events, composer, status bar, session create
 - ⬜ markdown rendering of assistant messages (marked)
 - ⬜ thinking-token rendering + toggle
 - ⬜ tool cards: collapsible output + diff view
-- ⬜ steer / follow-up queueing controls (mid-stream interruption)
+- ⬜ steer / follow-up queueing controls
 - ⬜ model / thinking-level selectors, abort button
 - ⬜ session tree, fork, resume
-- ⬜ `/` command palette + GUI mirrors of harness commands (`/carl`, `/ctxmax` …)
+- ⬜ `/` command palette + GUI mirrors of harness commands
 - ⬜ GUI status widget mirroring `context-guard` footer status
-
-> **v1 note:** the sidecar + shared protocol + Tauri relay + React chat UI are
-> scaffolded and the sidecar is verified to boot (loads 3 extensions, creates a
-> session, answers ping). The GUI window itself has not yet been run/built
-> end-to-end on a headless machine; `bun run --cwd apps/gui tauri dev` is the
-> manual verification step.
 
 ### Non-goals
 - Forking pi or omp
