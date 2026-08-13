@@ -20,9 +20,10 @@ fn sidecar_send(state: State<'_, Sidecar>, json: String) -> Result<(), String> {
 
 /// Launch the sidecar and register the stdio relay at app setup.
 fn setup(app: &AppHandle) -> std::io::Result<()> {
-    // Monorepo root = two levels up from src-tauri.
+    // Monorepo root = three levels up from src-tauri (src-tauri -> gui -> apps -> carl-code).
     let root = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
+        .and_then(|p| p.parent())
         .and_then(|p| p.parent())
         .expect("monorepo root must exist")
         .to_path_buf();
