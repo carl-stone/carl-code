@@ -106,3 +106,8 @@ Other installed third-party packages:
 - `pi-subagents` — subagent runner
 - `pi-web-access` — web search/fetch (decision 0002)
 - `@ff-labs/pi-fff` — FFF-powered fuzzy file & content search (fffind / ffgrep)
+ - `@juicesharp/rpiv-todo` — todo list tool
+ - `@juicesharp/rpiv-config` — package config
+ - `pi-subagents` — subagent runner
+ - `pi-web-access` — web search/fetch (decision 0002)
+ - `@ff-labs/pi-fff` — FFF-powered fuzzy file & content search (fffind / ffgrep)

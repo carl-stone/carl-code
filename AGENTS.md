@@ -57,4 +57,10 @@ Keep these three sources consistent and at the right level:
 
 When you change architecture or behavior: update the decision file, then
 ARCHITECTURE.md, then (if it affects work) the README roadmap.
+When you change architecture or behavior: update the decision file, then
+ARCHITECTURE.md, then (if it affects work) the README roadmap.
+
+Keep the README "Other installed third-party packages" list in sync with the
+global install at `~/.pi/agent/npm/node_modules` when you add or remove a
+third-party pi package.
 
