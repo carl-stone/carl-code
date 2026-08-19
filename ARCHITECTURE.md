@@ -14,6 +14,12 @@ where relevant. Roadmap/todo lives in [README.md](README.md), not here.
   [0004](docs/decisions/0004-desktop-gui-tauri-sdk-sidecar.md)).
 - **Web/search/fetch:** the `pi-web-access` package (decision
   [0002](docs/decisions/0002-web-search-pi-web-access.md)).
+- **Scientific literature:** the Paperclip CLI, wrapped as a harness extension
+  (decision [0005](docs/decisions/0005-paperclip-cli-extension.md)).
+- **In-session resource config:** `/packages`, a harness extension command that
+  opens a TUI to enable/disable package resources (extensions, skills, prompts,
+  themes), including a package-wide "All" toggle, and auto-reloads on change
+  (decision [0006](docs/decisions/0006-packages-resource-config-command.md)).
 
 ## Component layout
 

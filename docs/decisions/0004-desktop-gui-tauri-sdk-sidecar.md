@@ -23,9 +23,9 @@ control over extensions, direct state access, deep custom UI). We embed the SDK.
   via a **Bun/Node TypeScript sidecar** that runs the pi SDK directly
   (`createAgentSession*`, event streaming). The GUI ↔ sidecar bridge can be
   custom JSON over stdio/local protocol (not pi's RPC mode).
-- **Scope:** parity with the TUI *as it exists on this machine today* (see
-  inventory in ARCHITECTURE.md). Not a general host for arbitrary third-party TUI
-  extensions.
+- **Scope:** parity with the TUI *as it exists on this machine today* (the
+  machine's TUI extension inventory is the "Harness (TUI extensions)" built list
+  in README.md). Not a general host for arbitrary third-party TUI extensions.
 - **Monorepo:** `carl-code` becomes the monorepo; the GUI lives inside it.
   Existing pi package (extensions/skills/prompts/themes) stays in the repo.
 

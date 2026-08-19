@@ -84,10 +84,25 @@ Single source of truth for todo — keep only here, not in ARCHITECTURE.md.
 6. ✅ **Marked done** — superseded by `unified-edit` extension (row-anchored fuzzy
    edits via public API; installed in harness). Original omp-hashline spike not needed.
 7. ⬜ Decide on porting omp skills/templates as `.md` (semantic-compression, etc.)
+8. ✅ **In-session package config** — `packages/harness/extensions/packages.ts`.
+   `/packages` opens a TUI to enable/disable each package's bundled resources
+   (extensions, skills, prompts, themes) — the same view `pi config` shows —
+   plus a package-wide "All" toggle and auto-`/reload` on change. Tab switches
+   global/project scope when the project is trusted. Decision 0006.
+9. ✅ **Paperclip literature access** — `packages/harness/extensions/paperclip.ts`.
+   Wraps the Paperclip CLI as a `paperclip` tool: search, read/grep, map (parallel
+   AI readers), reduce, sql, and figure analysis over 11M+ papers, FDA docs, trials,
+   and bio databases (UniProt, PDB, ChEMBL). Spawns the binary directly to inject
+   the API key from env or `~/.paperclip/api_key`. Decision 0005. Verified
+   end-to-end (search → map).
+10. ✅ **Context guard** — `packages/harness/extensions/context-guard.ts`.
+    `/ctxmax` sets a custom max-context auto-compact limit; a footer widget shows
+    current context usage vs. the limit (tokens + %). Config persists in
+    `~/.pi/agent/context-guard.json`.
 
 Other installed third-party packages:
 - `@juicesharp/rpiv-ask-user-question` — structured questionnaire (typed options)
 - `@juicesharp/rpiv-btw`
 - `pi-subagents` — subagent runner
 - `pi-web-access` — web search/fetch (decision 0002)
-
+- `@ff-labs/pi-fff` — FFF-powered fuzzy file & content search (fffind / ffgrep)

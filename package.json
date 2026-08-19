@@ -9,7 +9,6 @@
   ],
   "scripts": {
     "dev:gui": "bun run --cwd apps/gui dev",
-    "dev:sidecar": "bun run --cwd packages/sidecar dev",
-    "build:shared": "bun run --cwd packages/shared build"
+    "dev:sidecar": "bun run --cwd packages/sidecar dev"
   }
 }

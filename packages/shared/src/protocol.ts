@@ -27,11 +27,10 @@ export type ClientMessage =
   | Request<{ text: string; streamingBehavior?: "steer" | "followUp" }> & { method: "prompt" }
   | Request<{ text: string }> & { method: "steer" }
   | Request<{ text: string }> & { method: "followUp" }
-  | Request<{ cwd: string }> & { method: "init" }
   | Request<{}> & { method: "abort" }
   | Request<{ modelId: string }> & { method: "setModel" }
   | Request<{}> & { method: "getState" }
-  | Request<{ command: string; args?: string }> & { method: "runCommand" }
+  | Request<{}> & { method: "ping" }
   | { id: number; method: string; params: unknown };
 
 /* ------------------------------------------------------------------ *

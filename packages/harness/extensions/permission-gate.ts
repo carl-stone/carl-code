@@ -6,10 +6,10 @@
 // Two guards, via the `tool_call` hook (which runs BEFORE the tool executes and
 // can block it):
 //
-//   1. Bash: patterns that are risky or irreversible (rm -rf, sudo, mkfs, dd,
-//      chmod/chown 777, catastrophic pipes, etc.).
-//   2. Paths: write/edit/delete that lands outside the project tree, or on a
-//      machine-critical file (e.g. ~/.pi/*), unless the user allows it.
+//   1. Bash: patterns that are destructive and irreversible (rm -rf, mkfs, dd
+//      to a raw device, force push, reset --hard, git clean -f).
+//   2. Paths: write/edit/delete that touches a machine-critical file
+//      (e.g. ~/.pi/*), unless the user allows it.
 //
 // Config (optional), read from ~/.pi/agent/permission-gate.json:
 //   { "blockWhenNoUI": true, "allowBashPatterns": [], "allowPaths": [] }

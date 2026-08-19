@@ -58,19 +58,3 @@ Keep these three sources consistent and at the right level:
 When you change architecture or behavior: update the decision file, then
 ARCHITECTURE.md, then (if it affects work) the README roadmap.
 
-## Maintaining repo docs
-
-Keep these three sources consistent and at the right level:
-
-- **ARCHITECTURE.md** — the *stable* contract: what the architecture *is* and
-  consequences that follow from decisions, each with a citation link to a
-  decision file (e.g. [0001](docs/decisions/0001-base-stock-pi-no-fork.md)).
-  No process, no rationale, no roadmap. Change rarely.
-- **docs/decisions/XXXXXXXX-title.md** — one numbered ADR per decision
-  (Context → Decision → Consequences; add a Revisit trigger when relevant).
-  New decision = next number. When behavior changes, reopen/update the relevant
-  decision *first*, then align ARCHITECTURE.md.
-- **README.md** — single home for the **roadmap/todo/built list**.
-
-When you change architecture or behavior: update the decision file, then
-ARCHITECTURE.md, then (if it affects work) the README roadmap.
