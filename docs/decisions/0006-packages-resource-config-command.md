@@ -48,8 +48,6 @@ Why a custom component rather than calling the built-in or reusing `pi config`:
 - The built-in `ConfigSelectorComponent` is intentionally internal (not exported).
 - The extension surface gives us `ctx.ui.custom`, the same theme/keybindings the
   TUI uses, and `ctx.reload()`, so the feature stays inside the harness.
-- Per the repo invariant, the GUI would reach this via the sidecar + protocol,
-  not by calling this component directly.
 
 ## Consequences
 

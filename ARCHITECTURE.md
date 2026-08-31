@@ -1,65 +1,54 @@
 # Architecture
 
-The architecture we commit to. This is the stable contract — it changes rarely.
+The architecture we commit to. This is the stable contract. It changes rarely.
 Decisions and rationale live in [docs/decisions/](docs/decisions/) and are cited
-where relevant. Roadmap/todo lives in [README.md](README.md), not here.
+where relevant. Roadmap and todo items live in [README.md](README.md), not here.
 
 ## Stack
 
-- **Base engine:** stock `@earendil-works/pi-coding-agent` (lean, TypeScript, MIT),
-  taken as a pinned dependency — not forked (decision
-  [0001](docs/decisions/0001-base-stock-pi-no-fork.md)).
-- **Product layer:** a Bun-workspace **monorepo** (`carl-code`) holding the
-  harness package, an agent sidecar, and a desktop GUI (decision
+- **Base engine:** stock `@earendil-works/pi-coding-agent` as a pinned dependency,
+  not a fork (decision [0001](docs/decisions/0001-base-stock-pi-no-fork.md)).
+- **Product layer:** a pi package containing extensions, skills, prompts, and
+  themes. The pi TUI is the only supported interface (decision
   [0004](docs/decisions/0004-desktop-gui-tauri-sdk-sidecar.md)).
-- **Web/search/fetch:** the `pi-web-access` package (decision
+- **Web search and fetch:** the `pi-web-access` package (decision
   [0002](docs/decisions/0002-web-search-pi-web-access.md)).
 - **Scientific literature:** the Paperclip CLI, wrapped as a harness extension
   (decision [0005](docs/decisions/0005-paperclip-cli-extension.md)).
-- **In-session resource config:** `/packages`, a harness extension command that
-  opens a TUI to enable/disable package resources (extensions, skills, prompts,
-  themes), including a package-wide "All" toggle, and auto-reloads on change
-  (decision [0006](docs/decisions/0006-packages-resource-config-command.md)).
+- **Resource configuration:** `/packages`, a harness command that enables or
+  disables package resources and reloads them (decision
+  [0006](docs/decisions/0006-packages-resource-config-command.md)).
 
 ## Component layout
 
 ```
-carl-code/                       ← Bun-workspace monorepo root
-├── apps/
-│   └── gui/                     ← Tauri 2 desktop shell (THIN; no Rust logic)
-│       ├── src/                 ← React + TS + Vite frontend (renders a projection)
-│       └── src-tauri/           ← Rust: launches/manages sidecar, relays JSONL
+carl-code/
 ├── packages/
-│   ├── harness/                 ← the pi package (extensions, skills, prompts, themes)
-│   ├── sidecar/                 ← Bun/Node TS agent host (embeds pi SDK)
-│   └── shared/                  ← typed JSON IPC protocol (contract)
-├── docs/decisions/              ← ADRs
-├── AGENTS.md                    ← authoring/maintenance instructions for this repo
-└── package.json                 ← workspace manifest (bun workspaces)
+│   └── harness/                 ← pi package: extensions, skills, prompts, themes
+├── docs/decisions/              ← architecture decision records
+├── AGENTS.md                    ← repository instructions
+└── package.json                 ← Bun workspace manifest
 ```
 
 ## Invariants
 
-- **The agent sidecar is the source of truth** for session/agent state; the GUI
-  only renders a projection of it. The GUI never touches pi directly.
-- **Rust is a thin relay only** — it launches the sidecar and relays JSONL over
-  stdio. No application logic in Rust.
-- Extensions are the code; skills are the guidance. Extensions live in
-  `packages/harness/extensions/` (or ship via a package).
-- `~/.pi/` (settings, auth, sessions, caches) is machine-local and **not**
-  versioned. Only what we write lives in the repo.
-- Features are added via the extension surface; we do **not** fork the engine and
-  do **not** adopt omp wholesale.
+- The pi TUI is the only supported interface. There is no separate GUI, sidecar,
+  or interface projection layer.
+- Extensions are code; skills are guidance. Harness resources live in
+  `packages/harness/` or arrive through an installed pi package.
+- `~/.pi/` settings, authentication, sessions, and caches remain local to the
+  machine and are not versioned.
+- Features use the pi extension and package surfaces. We do not fork pi or adopt
+  omp wholesale.
 
 ## Scope boundary
 
-Everything we build lives in the pi extension/package surface and the GUI
-projection layer. Agent-core and Rust-native capabilities (LSP, DAP, embedded
-bash, tree-sitter AST edits, hashline at depth, **TTSR** stream rules) are
-**out of scope** unless a decision reopens them (decision
+Everything we build lives in the pi extension and package surfaces. Agent core
+and Rust native capabilities such as LSP, DAP, embedded bash, tree sitter edits,
+hashline at depth, and TTSR stream rules are out of scope unless a decision
+reopens them (decision
 [0003](docs/decisions/0003-defer-core-rust-omp-features.md)).
 
-The GUI targets **behavioral parity with the TUI as it exists on this machine**
-(pi 0.84.1 + carl-code + pi-web-access), not binary compatibility with arbitrary
-`pi-tui` components (decision
+A separate desktop or web interface is also out of scope until the harness is
+mature and the TUI cannot meet a clear need (decision
 [0004](docs/decisions/0004-desktop-gui-tauri-sdk-sidecar.md)).

@@ -53,8 +53,6 @@ file is local and gitignored; it is not part of this repo.
   (installed via the Paperclip one-line installer, binary portion only; login was
   skipped because it requires a browser). The tool falls back to that absolute path
   if `paperclip` is not on PATH.
-- This is a harness (TUI) extension. If/when the GUI mirrors it, follow the repo
-  invariant: add the behavior to the sidecar, extend `packages/shared/protocol.ts`,
-  then render the projection in `apps/gui/src/components/`.
+- This is a harness extension for the pi TUI.
 - Revisit trigger: if Paperclip's MCP server gains feature parity and a key-header
   auth path that fits the harness better, reconsider CLI-over-spawn vs MCP.

@@ -2,65 +2,46 @@
 
 ## Project overview
 
-This is a pi package for developing and tracking Carl's personal agent harness, Carl Code.
-While named Carl Code, it is for much more than coding. 
-Carl is a computational biologist, but he is not a software engineer.
-Always ask questions to elicit more information from him on the desired *behavior* of what you are building, 
-but make reasonable decisions around software engineering defaults when it comes to stacks, architecture, and coding conventions.
+This is a pi package for developing and tracking Carl's personal agent harness,
+Carl Code. While named Carl Code, it supports more than coding. Carl is a
+computational biologist, not a software engineer.
 
-## Monorepo map
+Ask questions to understand the desired behavior, but make reasonable software
+engineering choices about architecture and conventions.
 
-Bun-workspace monorepo. Three packages plus a GUI:
+## Repository map
 
-- `packages/harness/` — the pi package (extensions/, skills/, prompts/, themes/).
-  This is what pi loads; extensions register via `package.json` `pi.extensions`.
-- `packages/sidecar/` — Bun/Node agent host embedding the pi SDK. **Source of truth**
-  for session/agent state. Speaks JSONL IPC on stdio (see `packages/shared/`).
-- `packages/shared/` — typed JSON IPC protocol (one file, dependency-free).
-- `apps/gui/` — Tauri 2 (thin Rust relay) + React/TS/Vite projection of sidecar state.
+- `packages/harness/` — the pi package with extensions, skills, prompts, and
+  themes. This is what pi loads.
+- `docs/decisions/` — architecture decision records.
+- `ARCHITECTURE.md` — the stable architecture contract.
+- `README.md` — setup, current features, and roadmap.
 
-## Architecture invariants (keep these true)
+## Architecture invariants
 
-1. The **sidecar is the source of truth**. The GUI never touches pi directly — it
-   only renders projections pushed over the shared protocol.
-2. **Rust is a thin relay.** `src-tauri` only launches the sidecar and relays JSONL
-   over stdio. No application logic in Rust.
-3. Extension logic lives in `packages/harness/`; GUI mirrors are React components
-   in `apps/gui/src/` projecting the same underlying state.
-4. We do **not** fork pi or adopt omp wholesale.
+1. The pi TUI is the only supported interface. Do not add a GUI, sidecar, or
+   separate interface unless decision 0004 is reopened first.
+2. Agent behavior lives in `packages/harness/` or an installed pi package.
+3. We do not fork pi or adopt omp wholesale.
 
-## Writing a GUI feature
+Add commands and tools to `packages/harness/extensions/`. Add agent guidance to
+`packages/harness/skills/`, prompts to `packages/harness/prompts/`, and themes to
+`packages/harness/themes/`.
 
-1. Add/reuse behavior in the sidecar (`packages/sidecar/src/index.ts`): a request
-   method + any agent events to forward.
-2. Extend `packages/shared/src/protocol.ts` with the message shapes (GUI + sidecar
-   both import this — it's the single contract).
-3. Render the resulting projection in `apps/gui/src/components/`.
-
-Add a slash command or tool? Put it in `packages/harness/extensions/` so the TUI
-also gets it. If it needs GUI-specific rendering, mirror it with a React component.
-
-## Maintaining repo docs
+## Maintaining repository docs
 
 Keep these three sources consistent and at the right level:
 
-- **ARCHITECTURE.md** — the *stable* contract: what the architecture *is* and
-  consequences that follow from decisions, each with a citation link to a
-  decision file (e.g. [0001](docs/decisions/0001-base-stock-pi-no-fork.md)).
-  No process, no rationale, no roadmap. Change rarely.
-- **docs/decisions/XXXXXXXX-title.md** — one numbered ADR per decision
-  (Context → Decision → Consequences; add a Revisit trigger when relevant).
-  New decision = next number. When behavior changes, reopen/update the relevant
-  decision *first*, then align ARCHITECTURE.md.
-- **README.md** — single home for the **roadmap/todo/built list**. Never put it
-  in ARCHITECTURE.md; don’t duplicate it under docs/.
+- **ARCHITECTURE.md** — the stable contract and consequences of accepted
+  decisions, with links to decision records. It contains no process, rationale,
+  or roadmap.
+- **docs/decisions/XXXXXXXX-title.md** — one numbered record per decision with
+  Context, Decision, Consequences, and a Revisit trigger when relevant. When
+  behavior changes, update the relevant decision first, then ARCHITECTURE.md.
+- **README.md** — the only home for the roadmap, todo list, and completed list.
 
-When you change architecture or behavior: update the decision file, then
-ARCHITECTURE.md, then (if it affects work) the README roadmap.
-When you change architecture or behavior: update the decision file, then
-ARCHITECTURE.md, then (if it affects work) the README roadmap.
+When architecture or behavior changes, update the decision record, then
+ARCHITECTURE.md, then the README roadmap if the work status changed.
 
-Keep the README "Other installed third-party packages" list in sync with the
-global install at `~/.pi/agent/npm/node_modules` when you add or remove a
-third-party pi package.
-
+Keep the README installed package list in sync with the global install at
+`~/.pi/agent/npm/node_modules` when a pi package is added or removed.
