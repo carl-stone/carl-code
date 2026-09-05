@@ -8,3 +8,5 @@ Decision records (ADRs), cited from ARCHITECTURE.md:
 - [0004](decisions/0004-desktop-gui-tauri-sdk-sidecar.md) — defer the desktop GUI and focus on the harness
 - [0005](decisions/0005-paperclip-cli-extension.md) — Paperclip CLI wrapped as a harness extension
 - [0006](decisions/0006-packages-resource-config-command.md) — `/packages` resource config command
+- [0007](decisions/0007-carl-code-pi-distribution.md) — Carl Code as a thin distribution over stock Pi
+- [0008](decisions/0008-dual-project-resource-roots.md) — discover `.pi` and Carl specific `.carl-code` project resources

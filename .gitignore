@@ -1,8 +1,9 @@
 # Node / package installs
 node_modules/
 
-# pi-generated / local caches (do NOT version these)
+# Agent state and local caches
 .pi/
+.carl-code/
 *.local
 
 # Secrets — never commit credentials
@@ -13,3 +14,6 @@ node_modules/
 # Bun
 bun.lockb
 *.tsbuildinfo
+
+# Local dependency-upgrade recovery records (not runtime state)
+.upgrade-backups/
