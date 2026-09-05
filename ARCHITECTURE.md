@@ -13,6 +13,10 @@ where relevant. Roadmap and todo items live in [README.md](README.md), not here.
   rollback restores only dependency files from the pre-upgrade working state.
   No startup or Pi self-updates; package and model updates are independent
   (decision [0007](docs/decisions/0007-carl-code-pi-distribution.md)).
+- **Upgrade proposals:** scheduled/manual CI tests npm's latest stable Pi before
+  opening a grouped dependency-only PR. Test execution and PR writing use
+  separate jobs; merges remain manual (decision
+  [0007](docs/decisions/0007-carl-code-pi-distribution.md)).
 - **Product layer:** a thin Carl Code distribution that calls Pi's public CLI
   entry point, plus a Pi package containing extensions, skills, prompts, and
   themes (decision [0007](docs/decisions/0007-carl-code-pi-distribution.md)).

@@ -1,0 +1,168 @@
+name: Propose Pi upgrade
+
+on:
+  schedule:
+    - cron: '23 11 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pi-upgrade-proposal
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Test candidate without write credentials
+    runs-on: macos-latest
+    timeout-minutes: 30
+    outputs:
+      available: ${{ steps.release.outputs.available }}
+      current: ${{ steps.release.outputs.current }}
+      version: ${{ steps.release.outputs.version }}
+      base_sha: ${{ steps.base.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.14'
+      - id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Discover a newer stable release
+        id: release
+        run: node scripts/check-pi-update.mjs
+      - name: Test and apply in the disposable checkout
+        if: steps.release.outputs.available == 'true'
+        env:
+          PI_VERSION: ${{ steps.release.outputs.version }}
+          # Keep all updater logs/candidates under a known artifact location.
+          TMPDIR: ${{ runner.temp }}/pi-upgrade
+        run: |
+          mkdir -p "$TMPDIR"
+          set -o pipefail
+          bun run update-pi "$PI_VERSION" --apply 2>&1 | tee "$TMPDIR/workflow.log"
+          git diff --check
+      - name: Prepare dependency-only proposal
+        if: steps.release.outputs.available == 'true'
+        env:
+          PROPOSAL: ${{ runner.temp }}/pi-proposal
+          OLD_VERSION: ${{ steps.release.outputs.current }}
+          NEW_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          mkdir -p "$PROPOSAL"
+          cp package.json bun.lock "$PROPOSAL/"
+          {
+            echo "Updates both exact Pi pins from **$OLD_VERSION** to **$NEW_VERSION**."
+            echo
+            echo "The controlled updater passed staged installation, frozen-lockfile validation, and the offline suite in both the candidate and applied checkout."
+            echo
+            echo "[Test run and logs]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+            echo
+            echo "[Upstream release notes](https://github.com/earendil-works/pi/releases/tag/v$NEW_VERSION) · [npm package](https://www.npmjs.com/package/@earendil-works/pi-coding-agent/v/$NEW_VERSION)"
+            echo
+            echo 'Before merging:'
+            echo '- [ ] Review upstream release notes and dependency diff.'
+            echo '- [ ] Run the isolated TUI/provider/session canary documented in README.md.'
+            echo
+            echo 'No automatic merge. No provider credentials were used. See the workflow summary for PR-check authentication mode.'
+          } > "$PROPOSAL/body.md"
+      - uses: actions/upload-artifact@v4
+        if: success() && steps.release.outputs.available == 'true'
+        with:
+          name: tested-pi-proposal
+          path: ${{ runner.temp }}/pi-proposal/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Retain diagnostic logs, including failures
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pi-upgrade-logs
+          path: |
+            ${{ runner.temp }}/pi-upgrade/workflow.log
+            ${{ runner.temp }}/pi-upgrade/**/checks.log
+            ${{ runner.temp }}/pi-upgrade/**/*.diff
+          retention-days: 14
+          if-no-files-found: ignore
+      - name: Summarize
+        if: always()
+        env:
+          AVAILABLE: ${{ steps.release.outputs.available }}
+          RESULT: ${{ job.status }}
+        run: |
+          echo "Candidate check result: $RESULT" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$AVAILABLE" = false ]; then
+            echo 'No newer stable release. No PR changes.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo 'A failed check never creates or updates a PR. Inspect the run logs and diagnostic artifact.' >> "$GITHUB_STEP_SUMMARY"
+
+  propose:
+    name: Open or update the tested upgrade PR
+    needs: check
+    if: needs.check.outputs.available == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Optional repository-scoped GitHub App token
+        if: vars.PI_UPDATE_APP_ID != ''
+        id: app
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.PI_UPDATE_APP_ID }}
+          private-key: ${{ secrets.PI_UPDATE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Refuse to propose against untested source changes
+        env:
+          TESTED_SHA: ${{ needs.check.outputs.base_sha }}
+        run: |
+          if [ "$(git rev-parse HEAD)" != "$TESTED_SHA" ]; then
+            echo 'Default branch changed during checks. Rerun this workflow to test the new base.' >&2
+            exit 1
+          fi
+      - uses: actions/download-artifact@v4
+        with:
+          name: tested-pi-proposal
+          path: ${{ runner.temp }}/pi-proposal
+      - name: Copy only the tested dependency files
+        run: |
+          cp "$RUNNER_TEMP/pi-proposal/package.json" package.json
+          cp "$RUNNER_TEMP/pi-proposal/bun.lock" bun.lock
+      - name: Create or update one rolling PR
+        id: pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.app.outputs.token || github.token }}
+          branch: automation/pi-upgrade
+          base: ${{ github.event.repository.default_branch }}
+          title: 'Upgrade Pi to ${{ needs.check.outputs.version }}'
+          commit-message: 'Upgrade Pi to ${{ needs.check.outputs.version }}'
+          body-path: ${{ runner.temp }}/pi-proposal/body.md
+          add-paths: |
+            package.json
+            bun.lock
+      - name: Explain PR-check authentication mode
+        env:
+          APP_ID: ${{ vars.PI_UPDATE_APP_ID }}
+          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+        run: |
+          echo "Upgrade PR: $PR_URL" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$APP_ID" ]; then
+            echo 'Created using the repository GitHub App; ordinary PR checks can run automatically.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Created using GITHUB_TOKEN. GitHub does not trigger ordinary PR workflows from this token. The explicit pre-PR checks passed; configure the optional GitHub App if branch protection requires PR status checks.' >> "$GITHUB_STEP_SUMMARY"
+          fi

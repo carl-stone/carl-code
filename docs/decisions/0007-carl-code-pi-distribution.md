@@ -35,6 +35,15 @@ Build Carl Code as a thin distribution around the stock
   ignored `.upgrade-backups/`; never reset Git or auto-commit. Preview clearly
   reports that the active runtime has not changed. Pi self-update through
   `carl update` is blocked; package-only and model-only updates remain separate.
+- A daily or manually triggered GitHub Actions workflow may select npm's latest
+  stable Pi release and run the same updater in a disposable, read-only job.
+  Only after checks pass may a separate job create or update one dependency-only
+  PR. It must refuse publication if the default branch has moved since testing.
+  Retain failure logs; never auto-merge. No provider credentials are used.
+- Use the default GitHub token unless an optional repository-scoped GitHub App
+  is configured. App credentials are restricted to the PR job. Default-token
+  PRs do not automatically trigger the ordinary PR workflow; the explicit
+  pre-PR upgrade checks remain the gate in that mode.
 - Set `PI_CODING_AGENT_DIR` to `~/.carl-code/agent` and
   `PI_CODING_AGENT_SESSION_DIR` to `~/.carl-code/sessions` before importing Pi.
 - On first launch, copy existing Pi authentication into Carl Code if Carl Code

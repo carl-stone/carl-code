@@ -164,8 +164,46 @@ to discard new sessions. Applied changes remain uncommitted for review.
 
 `carl update` and self-update combinations are blocked. Use
 `carl update --extensions` or `carl update --models` for those independent
-updates; they do not change the pinned runtime. There are no automatic updates
-or scheduled update checks.
+updates; they do not change the pinned runtime. There are no automatic local
+runtime updates. GitHub can propose tested upgrades as described below.
+
+### Automatic upgrade PRs
+
+`.github/workflows/pi-upgrade.yml` checks npm daily at **11:23 UTC** and can also
+be started from **Actions → Propose Pi upgrade → Run workflow**. It uses the
+default branch, selects only a newer exact stable release, confirms that both
+Pi packages exist, and runs the same `update-pi --apply` checks in a disposable
+checkout. No local Carl Code installation or runtime state is touched.
+
+Only after checks pass does a separate job open or update
+`automation/pi-upgrade`, containing only `package.json` and `bun.lock`. The PR
+links to the test run and upstream release notes and includes the manual canary
+checklist. It never auto-merges. If the default branch moves between testing
+and the PR job, the workflow stops; rerun it to test the new base. Failed
+checks leave any existing PR unchanged and retain diagnostic logs for 14 days.
+GitHub Actions notifications, if enabled in your account, report run failures;
+the workflow does not send messages or open failure issues.
+
+**Activation:** commit and push this workflow to the repository's default
+branch. GitHub Actions must be enabled. For the default-token mode, enable
+**Settings → Actions → General → Workflow permissions → Allow GitHub Actions
+to create and approve pull requests** (the workflow only creates them; it does
+not approve). Organization policy can restrict this setting. These remote
+settings are not configured by adding the workflow files.
+
+**Recommended optional GitHub App:** install an App on this repository with
+**Contents: read/write** and **Pull requests: read/write**. Set repository
+Actions variable `PI_UPDATE_APP_ID` to its App ID and Actions secret
+`PI_UPDATE_APP_PRIVATE_KEY` to its private key. The workflow mints a
+repository-scoped token only in the PR job; the candidate test job receives
+neither the App key nor provider credentials. If App configuration is present
+but invalid, it fails rather than silently falling back.
+
+Without App configuration, the workflow uses `GITHUB_TOKEN`. The upgrade tests
+still run before the PR, but GitHub normally suppresses subsequent PR workflows
+for PRs created by that token. If branch protection requires the ordinary
+`offline-smoke` PR check, configure the App rather than bypassing protection.
+App-created PRs trigger the existing compatibility workflow normally.
 
 ## Structure
 
@@ -206,6 +244,8 @@ This is the single source of truth for planned and completed work.
    dependency bumps, preservation of uncommitted work, dependency-only rollback,
    and checks for
    launch, identity, extension loading, and resource-loader reload.
+   ✅ **Automatic upgrade proposals** — daily/manual CI creates a grouped PR
+   only after upgrade checks pass; manual merge, optional GitHub App support.
    ⬜ Extend coverage to interactive reload, project-resource discovery, TUI
    rendering, and provider/tool continuation; use the manual canary meanwhile.
 7. ⬜ **Persistent access** — consider a hosted service and messaging interface
